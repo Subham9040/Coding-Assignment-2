@@ -15,7 +15,7 @@ let db = null
 
 const initializeDbAndServer = async () => {
   try {
-    database = await open({
+    db = await open({
       filename: dbPath,
       driver: sqlite3.Database,
     })
@@ -211,7 +211,7 @@ app.get(
   tweetAccessVerification,
   async (request, response) => {
     const {tweetId} = request.params
-    const getRepliedQuery = `SELECT username, reply
+    const getRepliedQuery = `SELECT name, reply
   FROM user INNER JOIN reply ON user.user_id = reply.user_id
   WHERE tweet_id = '${tweetId}';`
     const repliedUsers = await db.all(getRepliedQuery)
@@ -223,7 +223,7 @@ app.get(
 app.get('/user/tweets/', authentication, async (request, response) => {
   const {userId} = request
   const getTweetsQuery = `
-  SELECT tweet
+  SELECT tweet,
   COUNT(DISTINCT like_id) AS likes,
   COUNT(DISTINCT reply_id) AS replies,
   date_time AS dateTime
